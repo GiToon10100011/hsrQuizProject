@@ -22,8 +22,8 @@ const ShareButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${(props) => props.bgColor || "#007bff"};
-  color: ${(props) => props.textColor || "#ffffff"};
+  background-color: ${(props) => props.$bgColor || "#007bff"};
+  color: ${(props) => props.$textColor || "#ffffff"};
   border: none;
   border-radius: 8px;
   padding: 10px 15px;
@@ -72,18 +72,24 @@ const CopyMessage = styled.div`
   }
 `;
 
-const ShareButtons = ({ resultName, resultImg, score, totalQuestions }) => {
+const ShareButtons = ({
+  resultName,
+  resultImg,
+  score,
+  totalQuestions,
+  disabled,
+}) => {
   const [showCopyMessage, setShowCopyMessage] = useState(false);
 
   const handleCopyUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText("https://toonaprilfoolsquiz.web.app/");
     setShowCopyMessage(true);
     setTimeout(() => setShowCopyMessage(false), 2000);
   };
 
-  const handleTwitterShare = () => {
+  const handleXShare = () => {
     const text = `나는 "${resultName}" 결과를 받았어요! (${score}/${totalQuestions}점)`;
-    const url = window.location.href;
+    const url = "https://toonaprilfoolsquiz.web.app/";
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(
         text
@@ -101,15 +107,24 @@ const ShareButtons = ({ resultName, resultImg, score, totalQuestions }) => {
         resultImg={resultImg}
         score={score}
         totalScore={totalQuestions}
+        disabled={disabled}
       />
 
-      <ShareButton onClick={handleTwitterShare} bgColor="#1DA1F2">
-        <img src="/images/twitter_icon.png" alt="Twitter" />
-        트위터로 공유하기
+      <ShareButton
+        onClick={handleXShare}
+        $bgColor="#000000"
+        disabled={disabled}
+      >
+        <img src="/X.svg" alt="X" style={{ filter: "invert(1)" }} />
+        X로 공유하기
       </ShareButton>
 
-      <ShareButton onClick={handleCopyUrl} bgColor="#6c757d">
-        <img src="/images/link_icon.png" alt="Copy URL" />
+      <ShareButton
+        onClick={handleCopyUrl}
+        $bgColor="#6c757d"
+        disabled={disabled}
+      >
+        <img src="/link.svg" alt="Copy URL" />
         URL 복사하기
       </ShareButton>
 

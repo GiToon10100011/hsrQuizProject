@@ -37,6 +37,7 @@ const Contents = styled.div`
 const Title = styled.div`
   font-size: 28px;
   margin: 20px 0 10px;
+  text-align: center;
 `;
 
 const LogoImg = styled.div`
@@ -121,13 +122,13 @@ const CategoryCard = styled(Button)`
   margin: 10px 0;
   text-align: center;
   font-size: 22px !important;
-  background-color: ${(props) => props.bgColor || "#007bff"};
+  background-color: ${(props) => props.$bgColor || "#007bff"};
   border: none;
   transition: transform 0.3s ease;
 
   &:hover {
     transform: scale(1.05);
-    background-color: ${(props) => props.hoverColor || "#0069d9"};
+    background-color: ${(props) => props.$hoverColor || "#0069d9"};
   }
 `;
 
@@ -207,23 +208,27 @@ const Home = () => {
       {showCategories && (
         <>
           <Header>상식 퀴즈</Header>
+          <p style={{ fontSize: "20px", color: "gray", marginBottom: "-20px" }}>
+            (외부 브라우저로 플레이 권장)
+          </p>
           <Contents>
             <Title>카테고리를 선택해주세요!</Title>
+            <p>만점을 받으면 선물이 있다는데..?(PC 환경 권장)</p>
             <LogoImg>
               <img src="/myImages/favicon.jpg" alt="quiz logo" />
             </LogoImg>
 
             <CategoryCard
-              bgColor="#3498db"
-              hoverColor="#2980b9"
+              $bgColor="#3498db"
+              $hoverColor="#2980b9"
               onClick={() => handleCategorySelect("aboutYou")}
             >
               나에 대한 상식 퀴즈
             </CategoryCard>
 
             <CategoryCard
-              bgColor="#e74c3c"
-              hoverColor="#c0392b"
+              $bgColor="#e74c3c"
+              $hoverColor="#c0392b"
               onClick={() => handleCategorySelect("aboutGames")}
             >
               게임 상식 퀴즈

@@ -67,27 +67,27 @@ const OptionButton = styled(Button)`
   text-align: left;
   position: relative;
   background-color: ${(props) => {
-    if (props.selected) {
-      if (props.correct) return "#28a745";
+    if (props.$selected) {
+      if (props.$correct) return "#28a745";
       return "#dc3545";
     }
-    return props.category === "aboutYou" ? "#007bff" : "#e74c3c";
+    return props.$category === "aboutYou" ? "#007bff" : "#e74c3c";
   }};
   border-color: ${(props) => {
-    if (props.selected) {
-      if (props.correct) return "#28a745";
+    if (props.$selected) {
+      if (props.$correct) return "#28a745";
       return "#dc3545";
     }
-    return props.category === "aboutYou" ? "#007bff" : "#e74c3c";
+    return props.$category === "aboutYou" ? "#007bff" : "#e74c3c";
   }};
   opacity: ${(props) =>
-    !props.selected && props.showAnswer && !props.correct ? 0.7 : 1};
+    !props.$selected && props.$showAnswer && !props.$correct ? 0.7 : 1};
 
   &:after {
     content: ${(props) =>
-      props.selected && props.correct
+      props.$selected && props.$correct
         ? "✓"
-        : props.selected && !props.correct
+        : props.$selected && !props.$correct
         ? "✗"
         : ""};
     position: absolute;
@@ -98,36 +98,36 @@ const OptionButton = styled(Button)`
 
   &:hover {
     background-color: ${(props) => {
-      if (props.selected) {
-        if (props.correct) return "#218838";
+      if (props.$selected) {
+        if (props.$correct) return "#218838";
         return "#c82333";
       }
-      return props.category === "aboutYou" ? "#0069d9" : "#c0392b";
+      return props.$category === "aboutYou" ? "#0069d9" : "#c0392b";
     }};
     border-color: ${(props) => {
-      if (props.selected) {
-        if (props.correct) return "#1e7e34";
+      if (props.$selected) {
+        if (props.$correct) return "#1e7e34";
         return "#bd2130";
       }
-      return props.category === "aboutYou" ? "#0062cc" : "#a63125";
+      return props.$category === "aboutYou" ? "#0062cc" : "#a63125";
     }};
   }
 
   &:disabled {
     cursor: not-allowed;
-    opacity: ${(props) => (props.correct && props.showAnswer ? 1 : 0.7)};
+    opacity: ${(props) => (props.$correct && props.$showAnswer ? 1 : 0.7)};
     background-color: ${(props) => {
-      if (props.correct && props.showAnswer) return "#28a745";
-      if (props.selected) {
-        if (props.correct) return "#28a745";
+      if (props.$correct && props.$showAnswer) return "#28a745";
+      if (props.$selected) {
+        if (props.$correct) return "#28a745";
         return "#dc3545";
       }
       return "#6c757d";
     }};
     border-color: ${(props) => {
-      if (props.correct && props.showAnswer) return "#28a745";
-      if (props.selected) {
-        if (props.correct) return "#28a745";
+      if (props.$correct && props.$showAnswer) return "#28a745";
+      if (props.$selected) {
+        if (props.$correct) return "#28a745";
         return "#dc3545";
       }
       return "#6c757d";
@@ -152,7 +152,7 @@ const CategoryBadge = styled.div`
   top: 20px;
   left: 20px;
   background-color: ${(props) =>
-    props.category === "aboutYou" ? "#3498db" : "#e74c3c"};
+    props.$category === "aboutYou" ? "#3498db" : "#e74c3c"};
   color: white;
   padding: 8px 16px;
   border-radius: 20px;
@@ -225,7 +225,6 @@ const Question = () => {
   }
 
   const currentQuestion = questionData[currentQuestionIndex];
-  console.log(currentQuestion);
   const progress = ((currentQuestionIndex + 1) / questionData.length) * 100;
 
   return (
@@ -235,13 +234,11 @@ const Question = () => {
         now={progress}
         label={`${Math.round(progress)}%`}
       />
-      <CategoryBadge category={category}>
+      <CategoryBadge $category={category}>
         {category === "aboutYou" ? "나에 대해서" : "게임에 대해서"}
       </CategoryBadge>
       <Wrapper>
-        <ScoreDisplay>
-          점수: {score} / 10
-        </ScoreDisplay>
+        <ScoreDisplay>점수: {score} / 10</ScoreDisplay>
 
         <Title>{currentQuestion.title}</Title>
 
@@ -270,12 +267,12 @@ const Question = () => {
           {currentQuestion.options.map((option) => (
             <OptionButton
               key={option.id}
-              selected={selectedOption === option.id}
-              correct={option.id === currentQuestion.correctAnswer}
-              showAnswer={showAnswer}
               onClick={() => handleOptionSelect(option.id)}
+              $category={category}
+              $selected={selectedOption === option.id}
+              $correct={option.id === currentQuestion.correctAnswer}
+              $showAnswer={showAnswer}
               disabled={showAnswer}
-              category={category}
             >
               {option.text}
             </OptionButton>
