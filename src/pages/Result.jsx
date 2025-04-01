@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import styled, { keyframes, css } from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
-import { resultRanges } from "../quizData";
+import { getResultRangesByCategory } from "../quizData";
 import ShareButtons from "../components/ShareButtons";
 import { useAudio } from "../components/AudioManager";
 
@@ -204,6 +204,17 @@ const ErrorPopup = styled.div`
   }
 `;
 
+const CategoryTag = styled.div`
+  background-color: ${(props) =>
+    props.category === "aboutYou" ? "#3498db" : "#e74c3c"};
+  color: white;
+  font-size: 16px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  display: inline-block;
+`;
+
 const Result = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -225,6 +236,9 @@ const Result = () => {
   const scorePercent = (score / totalQuestions) * 100;
 
   useEffect(() => {
+    // Get the result ranges based on category
+    const resultRanges = getResultRangesByCategory(category);
+
     // Find the appropriate result range
     const result = resultRanges.find(
       (range) => score >= range.min && score <= range.max
@@ -280,7 +294,9 @@ const Result = () => {
               if (!alertTimerRef.current) {
                 alertTimerRef.current = setInterval(() => {
                   window.alert(
-                    "축하합니다! 케인의 뭉탱이월드에 오신것을 환영합니다!"
+                    category === "aboutYou"
+                      ? "축하합니다! 케인의 뭉탱이월드에 오신것을 환영합니다!"
+                      : "축하합니다! 당신은 게임의 신입니다!"
                   );
                 }, 1000);
               }
@@ -297,10 +313,11 @@ const Result = () => {
       if (chaosTimerRef.current) clearInterval(chaosTimerRef.current);
       if (alertTimerRef.current) clearInterval(alertTimerRef.current);
     };
-  }, [score, playSound]);
+  }, [score, category, playSound]);
 
   const handlePlayAgain = () => {
-    navigate("/");
+    // 단순히 홈으로 이동하는 대신 페이지를 새로고침하여 상태 초기화
+    window.location.href = "/";
   };
 
   if (!resultData) {
@@ -334,6 +351,10 @@ const Result = () => {
             resultData.effect === "chaos" ? `rotate(${chaosLevel}deg)` : "none",
         }}
       >
+        <CategoryTag category={category}>
+          {category === "aboutYou" ? "나에 대해서" : "게임에 대해서"}
+        </CategoryTag>
+
         <Title color={resultData.effect === "chaos" ? "#ff0" : "#fff"}>
           {resultData.title}
         </Title>

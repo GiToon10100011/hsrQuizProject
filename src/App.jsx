@@ -52,7 +52,8 @@ const GlobalStyles = createGlobalStyle`
 
   body{
     font-family: 'Noto Sans KR', 'Poppins', sans-serif;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("/images/background.jpg") center/cover no-repeat fixed;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/kaneBackground.webp") no-repeat center center fixed;
+    background-size: cover;
   }
 
   :root{

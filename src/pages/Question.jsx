@@ -66,15 +66,25 @@ const OptionButton = styled(Button)`
   font-size: 18px;
   text-align: left;
   position: relative;
-  background-color: ${(props) =>
-    props.selected ? (props.correct ? "#28a745" : "#dc3545") : "#007bff"};
-  border-color: ${(props) =>
-    props.selected ? (props.correct ? "#28a745" : "#dc3545") : "#007bff"};
+  background-color: ${(props) => {
+    if (props.selected) {
+      if (props.correct) return "#28a745";
+      return "#dc3545";
+    }
+    return props.category === "aboutYou" ? "#007bff" : "#e74c3c";
+  }};
+  border-color: ${(props) => {
+    if (props.selected) {
+      if (props.correct) return "#28a745";
+      return "#dc3545";
+    }
+    return props.category === "aboutYou" ? "#007bff" : "#e74c3c";
+  }};
   opacity: ${(props) =>
     !props.selected && props.showAnswer && !props.correct ? 0.7 : 1};
 
   &:after {
-    content: ${({ props }) =>
+    content: ${(props) =>
       props.selected && props.correct
         ? "✓"
         : props.selected && !props.correct
@@ -87,31 +97,41 @@ const OptionButton = styled(Button)`
   }
 
   &:hover {
-    background-color: ${(props) =>
-      props.selected ? (props.correct ? "#218838" : "#c82333") : "#0069d9"};
-    border-color: ${(props) =>
-      props.selected ? (props.correct ? "#1e7e34" : "#bd2130") : "#0062cc"};
+    background-color: ${(props) => {
+      if (props.selected) {
+        if (props.correct) return "#218838";
+        return "#c82333";
+      }
+      return props.category === "aboutYou" ? "#0069d9" : "#c0392b";
+    }};
+    border-color: ${(props) => {
+      if (props.selected) {
+        if (props.correct) return "#1e7e34";
+        return "#bd2130";
+      }
+      return props.category === "aboutYou" ? "#0062cc" : "#a63125";
+    }};
   }
 
   &:disabled {
     cursor: not-allowed;
     opacity: ${(props) => (props.correct && props.showAnswer ? 1 : 0.7)};
-    background-color: ${(props) =>
-      props.correct && props.showAnswer
-        ? "#28a745"
-        : props.selected
-        ? props.correct
-          ? "#28a745"
-          : "#dc3545"
-        : "#6c757d"};
-    border-color: ${(props) =>
-      props.correct && props.showAnswer
-        ? "#28a745"
-        : props.selected
-        ? props.correct
-          ? "#28a745"
-          : "#dc3545"
-        : "#6c757d"};
+    background-color: ${(props) => {
+      if (props.correct && props.showAnswer) return "#28a745";
+      if (props.selected) {
+        if (props.correct) return "#28a745";
+        return "#dc3545";
+      }
+      return "#6c757d";
+    }};
+    border-color: ${(props) => {
+      if (props.correct && props.showAnswer) return "#28a745";
+      if (props.selected) {
+        if (props.correct) return "#28a745";
+        return "#dc3545";
+      }
+      return "#6c757d";
+    }};
   }
 `;
 
@@ -125,6 +145,21 @@ const ScoreDisplay = styled.div`
   font-size: 24px;
   margin: 20px 0;
   color: white;
+`;
+
+const CategoryBadge = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background-color: ${(props) =>
+    props.category === "aboutYou" ? "#3498db" : "#e74c3c"};
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 100;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 `;
 
 const Question = () => {
@@ -190,18 +225,22 @@ const Question = () => {
   }
 
   const currentQuestion = questionData[currentQuestionIndex];
+  console.log(currentQuestion);
   const progress = ((currentQuestionIndex + 1) / questionData.length) * 100;
 
   return (
     <>
       <ProgressBar
-        variant="info"
+        variant={category === "aboutYou" ? "info" : "danger"}
         now={progress}
         label={`${Math.round(progress)}%`}
       />
+      <CategoryBadge category={category}>
+        {category === "aboutYou" ? "나에 대해서" : "게임에 대해서"}
+      </CategoryBadge>
       <Wrapper>
         <ScoreDisplay>
-          점수: {score} / {currentQuestionIndex + 1}
+          점수: {score} / 10
         </ScoreDisplay>
 
         <Title>{currentQuestion.title}</Title>
@@ -236,6 +275,7 @@ const Question = () => {
               showAnswer={showAnswer}
               onClick={() => handleOptionSelect(option.id)}
               disabled={showAnswer}
+              category={category}
             >
               {option.text}
             </OptionButton>
@@ -243,7 +283,10 @@ const Question = () => {
         </OptionsContainer>
 
         {showAnswer && (
-          <NextButton variant="success" onClick={handleNextQuestion}>
+          <NextButton
+            variant={category === "aboutYou" ? "success" : "danger"}
+            onClick={handleNextQuestion}
+          >
             {currentQuestionIndex < questionData.length - 1
               ? "다음 문제"
               : "결과 보기"}

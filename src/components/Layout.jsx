@@ -12,6 +12,7 @@ const Layout = () => {
     preloadSound("special_incorrect", "/audio/special_incorrect.mp3");
     preloadSound("okay", "/audio/okay.mp3");
     preloadSound("great", "/audio/great.mp3");
+    preloadSound("test", "/audio/test.mp3");
   }, [preloadSound]);
 
   return (

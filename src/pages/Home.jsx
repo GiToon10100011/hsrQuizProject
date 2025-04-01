@@ -163,29 +163,8 @@ const Home = () => {
 
   useEffect(() => {
     // Preload test sound
-    preloadSound("test", "/audio/correct.mp3");
-
-    // Auto-play test sound after 1 second if it hasn't been played yet
-    if (showVolumeMessage && !soundTestPlayed.current) {
-      const timer = setTimeout(() => {
-        playSound("test");
-        soundTestPlayed.current = true;
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
+    preloadSound("test", "/audio/test.mp3");
   }, [preloadSound, playSound, showVolumeMessage]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (showVolumeMessage) {
-        setShowVolumeMessage(false);
-        setShowCategories(true);
-      }
-    }, 8000); // Auto-hide after 8 seconds instead of 5
-
-    return () => clearTimeout(timer);
-  }, [showVolumeMessage]);
 
   const handleVolumeMessageClose = () => {
     setShowVolumeMessage(false);
@@ -227,11 +206,11 @@ const Home = () => {
 
       {showCategories && (
         <>
-          <Header>나에 대한 퀴즈</Header>
+          <Header>상식 퀴즈</Header>
           <Contents>
             <Title>카테고리를 선택해주세요!</Title>
             <LogoImg>
-              <img src="/images/quiz_logo.jpg" alt="quiz logo" />
+              <img src="/myImages/favicon.jpg" alt="quiz logo" />
             </LogoImg>
 
             <CategoryCard
@@ -239,7 +218,7 @@ const Home = () => {
               hoverColor="#2980b9"
               onClick={() => handleCategorySelect("aboutYou")}
             >
-              나에 대해서
+              나에 대한 상식 퀴즈
             </CategoryCard>
 
             <CategoryCard
@@ -247,7 +226,7 @@ const Home = () => {
               hoverColor="#c0392b"
               onClick={() => handleCategorySelect("aboutGames")}
             >
-              게임에 대해서
+              게임 상식 퀴즈
             </CategoryCard>
           </Contents>
         </>

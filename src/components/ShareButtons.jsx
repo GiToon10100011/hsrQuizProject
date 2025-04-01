@@ -92,14 +92,6 @@ const ShareButtons = ({ resultName, resultImg, score, totalQuestions }) => {
     );
   };
 
-  const handleFacebookShare = () => {
-    const url = window.location.href;
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-      "_blank"
-    );
-  };
-
   return (
     <ShareContainer>
       <ShareTitle>결과 공유하기</ShareTitle>
@@ -114,11 +106,6 @@ const ShareButtons = ({ resultName, resultImg, score, totalQuestions }) => {
       <ShareButton onClick={handleTwitterShare} bgColor="#1DA1F2">
         <img src="/images/twitter_icon.png" alt="Twitter" />
         트위터로 공유하기
-      </ShareButton>
-
-      <ShareButton onClick={handleFacebookShare} bgColor="#4267B2">
-        <img src="/images/facebook_icon.png" alt="Facebook" />
-        페이스북으로 공유하기
       </ShareButton>
 
       <ShareButton onClick={handleCopyUrl} bgColor="#6c757d">
