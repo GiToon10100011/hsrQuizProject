@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
+import { useAudio } from "../components/AudioManager";
 
 const Wrapper = styled.div`
   display: flex;
@@ -17,6 +18,7 @@ const Wrapper = styled.div`
 const Header = styled.div`
   font-size: 40px;
   font-weight: 600;
+  margin-bottom: 30px;
 `;
 
 const Contents = styled.div`
@@ -24,9 +26,11 @@ const Contents = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
   button {
     align-self: stretch;
+    font-size: 18px;
+    padding: 12px 24px;
   }
 `;
 
@@ -40,6 +44,8 @@ const LogoImg = styled.div`
     width: 350px;
     height: 350px;
     object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 20px;
   }
   @media screen and (max-width: 768px) {
     & > img {
@@ -49,33 +55,203 @@ const LogoImg = styled.div`
   }
 `;
 
-const Desc = styled.div`
-  margin: 10px 0;
-  font-size: 20px;
-  @media screen and (max-width: 768px) {
-    width: 300px;
+const VolumeMessage = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 1000;
+  flex-direction: column;
+  gap: 30px;
+
+  h2 {
+    font-size: 40px;
+    color: white;
     text-align: center;
+  }
+
+  p {
+    font-size: 22px;
+    color: white;
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.6;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 22px;
+    background-color: #e74c3c;
+    border: none;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #c0392b;
+      transform: scale(1.05);
+    }
+  }
+
+  .volume-icon {
+    font-size: 80px;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+`;
+
+const CategoryCard = styled(Button)`
+  width: 100%;
+  padding: 30px !important;
+  margin: 10px 0;
+  text-align: center;
+  font-size: 22px !important;
+  background-color: ${(props) => props.bgColor || "#007bff"};
+  border: none;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    background-color: ${(props) => props.hoverColor || "#0069d9"};
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+`;
+
+const TestSoundButton = styled(Button)`
+  padding: 15px 30px;
+  font-size: 22px;
+  background-color: #3498db;
+  border: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #2980b9;
+    transform: scale(1.05);
   }
 `;
 
 const Home = () => {
+  const [showVolumeMessage, setShowVolumeMessage] = useState(true);
+  const [showCategories, setShowCategories] = useState(false);
   const navigate = useNavigate();
+  const { preloadSound, playSound } = useAudio();
+  const soundTestPlayed = useRef(false);
 
-  const handleClickButton = () => {
-    navigate("/question");
+  useEffect(() => {
+    // Preload test sound
+    preloadSound("test", "/audio/correct.mp3");
+
+    // Auto-play test sound after 1 second if it hasn't been played yet
+    if (showVolumeMessage && !soundTestPlayed.current) {
+      const timer = setTimeout(() => {
+        playSound("test");
+        soundTestPlayed.current = true;
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [preloadSound, playSound, showVolumeMessage]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (showVolumeMessage) {
+        setShowVolumeMessage(false);
+        setShowCategories(true);
+      }
+    }, 8000); // Auto-hide after 8 seconds instead of 5
+
+    return () => clearTimeout(timer);
+  }, [showVolumeMessage]);
+
+  const handleVolumeMessageClose = () => {
+    setShowVolumeMessage(false);
+    setShowCategories(true);
+  };
+
+  const handleTestSound = () => {
+    playSound("test");
+    soundTestPlayed.current = true;
+  };
+
+  const handleCategorySelect = (category) => {
+    navigate("/question", { state: { category } });
   };
 
   return (
     <Wrapper>
-      <Header>염동훈 유형 판별기</Header>
-      <Contents>
-        <Title>나랑 제일 잘맞는 동훈이는?</Title>
-        <LogoImg>
-          <img src="/images/ydhdot.png" alt="logo" />
-        </LogoImg>
-        <Desc>😨 MBTI를 기반으로 하는 나랑 맞는 염동훈 찾기 😨</Desc>
-        <Button onClick={handleClickButton}>테스트 시작하기</Button>
-      </Contents>
+      {showVolumeMessage && (
+        <VolumeMessage>
+          <div className="volume-icon">🔊</div>
+          <h2>음량을 켜주세요!</h2>
+          <p>
+            퀴즈에 오디오 효과가 포함되어 있습니다.
+            <br />
+            최상의 경험을 위해 음량을 켜주세요.
+            <br />
+            (음량은 50%로 설정되어 있습니다)
+          </p>
+          <ButtonGroup>
+            <TestSoundButton onClick={handleTestSound}>
+              소리 테스트
+            </TestSoundButton>
+            <Button variant="danger" onClick={handleVolumeMessageClose}>
+              알겠습니다!
+            </Button>
+          </ButtonGroup>
+        </VolumeMessage>
+      )}
+
+      {showCategories && (
+        <>
+          <Header>나에 대한 퀴즈</Header>
+          <Contents>
+            <Title>카테고리를 선택해주세요!</Title>
+            <LogoImg>
+              <img src="/images/quiz_logo.jpg" alt="quiz logo" />
+            </LogoImg>
+
+            <CategoryCard
+              bgColor="#3498db"
+              hoverColor="#2980b9"
+              onClick={() => handleCategorySelect("aboutYou")}
+            >
+              나에 대해서
+            </CategoryCard>
+
+            <CategoryCard
+              bgColor="#e74c3c"
+              hoverColor="#c0392b"
+              onClick={() => handleCategorySelect("aboutGames")}
+            >
+              게임에 대해서
+            </CategoryCard>
+          </Contents>
+        </>
+      )}
     </Wrapper>
   );
 };

@@ -1,168 +1,254 @@
-import React, { useState, useContext } from "react";
-import { useNavigate, createSearchParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, ProgressBar } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styled from "styled-components";
-import { QuestionData } from "../questiondata";
-
-const scoreContext = React.createContext();
+import { aboutYouQuestions, aboutGamesQuestions } from "../quizData";
+import { useAudio } from "../components/AudioManager";
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 98vh;
+  min-height: 98vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: #fff;
+  padding: 20px;
 `;
 
 const Title = styled.div`
   font-size: 30px;
   width: auto;
+  max-width: 80%;
   text-align: center;
-  margin-bottom: 10px;
-  padding: 8px 16px;
+  margin-bottom: 20px;
+  padding: 16px;
   border-bottom: 1px solid;
   border-radius: 8px;
   @media screen and (max-width: 768px) {
     font-size: 24px;
-    width: 300px;
+    width: 90%;
   }
 `;
 
-const ButtonGroup = styled.div`
+const MediaContainer = styled.div`
+  margin: 20px 0;
+  width: 100%;
+  max-width: 500px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
-  & > button {
-    width: 400px;
-    height: 200px;
-    font-size: 18px;
+
+  img,
+  video {
+    max-width: 100%;
+    max-height: 300px;
+    border-radius: 10px;
+    object-fit: contain;
   }
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-    & > button {
-      width: 300px;
-      height: 150px;
-      font-size: 16px;
-    }
+
+  audio {
+    width: 100%;
   }
-  @media screen and (max-width: 360px) {
-    flex-direction: column;
-    & > button {
-      width: 200px;
-      height: 100px;
-      font-size: 16px;
-    }
+`;
+
+const OptionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 500px;
+`;
+
+const OptionButton = styled(Button)`
+  padding: 15px;
+  font-size: 18px;
+  text-align: left;
+  position: relative;
+  background-color: ${(props) =>
+    props.selected ? (props.correct ? "#28a745" : "#dc3545") : "#007bff"};
+  border-color: ${(props) =>
+    props.selected ? (props.correct ? "#28a745" : "#dc3545") : "#007bff"};
+  opacity: ${(props) =>
+    !props.selected && props.showAnswer && !props.correct ? 0.7 : 1};
+
+  &:after {
+    content: ${({ props }) =>
+      props.selected && props.correct
+        ? "✓"
+        : props.selected && !props.correct
+        ? "✗"
+        : ""};
+    position: absolute;
+    right: 15px;
+    font-size: 20px;
+    font-weight: bold;
   }
+
+  &:hover {
+    background-color: ${(props) =>
+      props.selected ? (props.correct ? "#218838" : "#c82333") : "#0069d9"};
+    border-color: ${(props) =>
+      props.selected ? (props.correct ? "#1e7e34" : "#bd2130") : "#0062cc"};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: ${(props) => (props.correct && props.showAnswer ? 1 : 0.7)};
+    background-color: ${(props) =>
+      props.correct && props.showAnswer
+        ? "#28a745"
+        : props.selected
+        ? props.correct
+          ? "#28a745"
+          : "#dc3545"
+        : "#6c757d"};
+    border-color: ${(props) =>
+      props.correct && props.showAnswer
+        ? "#28a745"
+        : props.selected
+        ? props.correct
+          ? "#28a745"
+          : "#dc3545"
+        : "#6c757d"};
+  }
+`;
+
+const NextButton = styled(Button)`
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 18px;
+`;
+
+const ScoreDisplay = styled.div`
+  font-size: 24px;
+  margin: 20px 0;
+  color: white;
 `;
 
 const Question = () => {
   const navigate = useNavigate();
-  const [questionNum, setQuestionNum] = useState(0);
+  const location = useLocation();
+  const category = location.state?.category || "aboutYou";
+  const { playSound } = useAudio();
 
-  const [totalScore, setTotalScore] = useState([
-    { id: "EI", score: 0 },
-    { id: "SN", score: 0 },
-    { id: "TF", score: 0 },
-    { id: "JP", score: 0 },
-  ]);
+  const [questionData, setQuestionData] = useState([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [score, setScore] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
 
-  const now = parseInt((questionNum / QuestionData.length) * 100);
-
-  const handleClickButton = (num, type) => {
-    const newScore = totalScore.map((score) =>
-      score.id === type ? { id: score.id, score: score.score + num } : score
+  useEffect(() => {
+    // Set the appropriate questions based on category
+    setQuestionData(
+      category === "aboutGames" ? aboutGamesQuestions : aboutYouQuestions
     );
+  }, [category]);
 
-    setTotalScore(newScore);
-    if (QuestionData.length !== questionNum + 1) {
-      setQuestionNum(questionNum + 1);
+  const handleOptionSelect = (optionId) => {
+    if (showAnswer) return; // Prevent selecting after answer is shown
+
+    const currentQuestion = questionData[currentQuestionIndex];
+    setSelectedOption(optionId);
+    setShowAnswer(true);
+
+    if (optionId === currentQuestion.correctAnswer) {
+      // Correct answer
+      setScore(score + 1);
+      playSound("correct");
     } else {
-      const mbti = newScore.reduce(
-        (acc, curr) =>
-          acc +
-          (curr.score >= 2 ? curr.id.substring(0, 1) : curr.id.substring(1, 2)),
-        ""
-      );
-      navigate({
-        pathname: "/result",
-        search: `?${createSearchParams({
-          mbti,
-        })}`,
+      // Incorrect answer
+      const newIncorrectCount = incorrectCount + 1;
+      setIncorrectCount(newIncorrectCount);
+
+      // Play special sound if too many incorrect answers
+      if (newIncorrectCount >= 3) {
+        playSound("special_incorrect");
+      } else {
+        playSound("incorrect");
+      }
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < questionData.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setSelectedOption(null);
+      setShowAnswer(false);
+    } else {
+      // Quiz is complete, navigate to result page
+      navigate("/result", {
+        state: { score, totalQuestions: questionData.length, category },
       });
     }
   };
 
-  // const handleClickButtonA = (num, type) => {
-  //   if (type === "EI") {
-  //     const addScore = totalScore[0].score + num;
-  //     const newObject = { id: "EI", score: addScore };
-  //     //첫번째의 인덱스값만 새로운 스코어로 대체해줌
-  //     totalScore.splice(0, 1, newObject);
-  //   } else if (type === "SN") {
-  //     const addScore = totalScore[1].score + num;
-  //     const newObject = { id: "SN", score: addScore };
-  //     totalScore.splice(1, 1, newObject);
-  //   } else if (type === "TF") {
-  //     const addScore = totalScore[2].score + num;
-  //     const newObject = { id: "TF", score: addScore };
-  //     totalScore.splice(2, 1, newObject);
-  //   } else {
-  //     const addScore = totalScore[3].score + num;
-  //     const newObject = { id: "JP", score: addScore };
-  //     totalScore.splice(3, 1, newObject);
-  //   }
-  //   setQuestionNum(questionNum + 1);
-  // };
+  if (questionData.length === 0) {
+    return <div>Loading...</div>;
+  }
 
-  // const handleClickButtonB = (num, type) => {
-  //   if (type === "EI") {
-  //     const addScore = totalScore[0].score + num;
-  //     const newObject = { id: "EI", score: addScore };
-  //     //첫번째의 인덱스값만 새로운 스코어로 대체해줌
-  //     totalScore.splice(0, 1, newObject);
-  //   } else if (type === "SN") {
-  //     const addScore = totalScore[1].score + num;
-  //     const newObject = { id: "SN", score: addScore };
-  //     totalScore.splice(1, 1, newObject);
-  //   } else if (type === "TF") {
-  //     const addScore = totalScore[2].score + num;
-  //     const newObject = { id: "TF", score: addScore };
-  //     totalScore.splice(2, 1, newObject);
-  //   } else {
-  //     const addScore = totalScore[3].score + num;
-  //     const newObject = { id: "JP", score: addScore };
-  //     totalScore.splice(3, 1, newObject);
-  //   }
-  //   setQuestionNum(questionNum + 1);
-  // };
-
-  console.log(totalScore);
+  const currentQuestion = questionData[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / questionData.length) * 100;
 
   return (
     <>
       <ProgressBar
         variant="info"
-        now={(questionNum / QuestionData.length) * 100}
-        label={`${now}%`}
+        now={progress}
+        label={`${Math.round(progress)}%`}
       />
       <Wrapper>
-        <Title>{QuestionData[questionNum].title}</Title>
-        <ButtonGroup>
-          <Button
-            onClick={() => handleClickButton(1, QuestionData[questionNum].type)}
-          >
-            {QuestionData[questionNum].answera}
-          </Button>
-          <Button
-            onClick={() => handleClickButton(0, QuestionData[questionNum].type)}
-          >
-            {QuestionData[questionNum].answerb}
-          </Button>
-        </ButtonGroup>
+        <ScoreDisplay>
+          점수: {score} / {currentQuestionIndex + 1}
+        </ScoreDisplay>
+
+        <Title>{currentQuestion.title}</Title>
+
+        {/* Render media based on type */}
+        {currentQuestion.type !== "text" && (
+          <MediaContainer>
+            {currentQuestion.type === "image" && (
+              <img src={currentQuestion.mediaPath} alt="Question" />
+            )}
+            {currentQuestion.type === "audio" && (
+              <audio controls>
+                <source src={currentQuestion.mediaPath} type="audio/mpeg" />
+                Your browser does not support the audio element.
+              </audio>
+            )}
+            {currentQuestion.type === "video" && (
+              <video controls>
+                <source src={currentQuestion.mediaPath} type="video/mp4" />
+                Your browser does not support the video element.
+              </video>
+            )}
+          </MediaContainer>
+        )}
+
+        <OptionsContainer>
+          {currentQuestion.options.map((option) => (
+            <OptionButton
+              key={option.id}
+              selected={selectedOption === option.id}
+              correct={option.id === currentQuestion.correctAnswer}
+              showAnswer={showAnswer}
+              onClick={() => handleOptionSelect(option.id)}
+              disabled={showAnswer}
+            >
+              {option.text}
+            </OptionButton>
+          ))}
+        </OptionsContainer>
+
+        {showAnswer && (
+          <NextButton variant="success" onClick={handleNextQuestion}>
+            {currentQuestionIndex < questionData.length - 1
+              ? "다음 문제"
+              : "결과 보기"}
+          </NextButton>
+        )}
       </Wrapper>
     </>
   );
