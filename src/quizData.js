@@ -136,14 +136,14 @@ export const aboutYouQuestions = [
 export const aboutGamesQuestions = [
   {
     id: 1,
-    title: "포켓몬 몇번도로 브금 맞추기",
+    title: "헤르타의 특징이 아닌것은?",
     options: [
-      { id: 1, text: "228번 도로(아침)" },
-      { id: 2, text: "216번 도로(아침)" },
-      { id: 3, text: "216번 도로(저녁)" },
-      { id: 4, text: "228번 도로(저녁)" },
+      { id: 1, text: "지식의 사도이다." },
+      { id: 2, text: "평소엔 인형으로 활동한다." },
+      { id: 3, text: "지니어스 클럽의 84번째 회원이다" },
+      { id: 4, text: "완매를 좋아한다" },
     ],
-    correctAnswer: 1,
+    correctAnswer: 3,
     type: "audio",
     mediaPath: "/audio/pokemon_route.mp3",
   },
