@@ -13,11 +13,12 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
-  color: #fff;
+  min-height: 100vh;
+  color: var(--text-primary);
   position: relative;
   overflow: hidden;
   background-color: ${(props) => props.$bgColor || "transparent"};
+  padding: 20px;
 `;
 
 const ContentContainer = styled.div`
@@ -25,17 +26,34 @@ const ContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 15px;
   z-index: 10;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 15px 30px;
-  border-radius: 15px;
+  background: var(--card-bg);
+  backdrop-filter: blur(15px);
+  padding: 30px 40px;
+  border-radius: 20px;
+  border: 2px solid rgba(120, 119, 198, 0.3);
+  box-shadow: var(--shadow-glow);
   max-width: 95%;
-  width: 600px;
+  width: 650px;
   max-height: 85vh;
   overflow-y: auto;
   text-align: center;
   transition: all 0.3s ease;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-primary);
+    opacity: 0.05;
+    border-radius: 18px;
+    pointer-events: none;
+  }
 
   ${(props) =>
     props.$crazyMode &&
@@ -47,38 +65,82 @@ const ContentContainer = styled.div`
 `;
 
 const Title = styled.div`
-  font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: ${(props) => props.$color || "#fff"};
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+  font-family: var(--orbitron-font);
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  background: ${(props) =>
+    props.$color === "#ff0"
+      ? "linear-gradient(45deg, #FFD700, #FFA500)"
+      : "var(--gradient-primary)"};
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px rgba(120, 119, 198, 0.6);
+  letter-spacing: 1px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 28px;
+  }
 `;
 
 const ScoreDisplay = styled.div`
-  font-size: 32px;
-  font-weight: bold;
-  margin: 5px 0;
-  color: ${(props) => {
-    if (props.$percent >= 90) return "#28a745";
-    if (props.$percent >= 70) return "#ffc107";
-    if (props.$percent >= 40) return "#fd7e14";
-    return "#dc3545";
+  font-family: var(--orbitron-font);
+  font-size: 36px;
+  font-weight: 800;
+  margin: 10px 0;
+  padding: 15px 25px;
+  border-radius: 15px;
+  background: var(--card-bg);
+  border: 2px solid;
+  border-color: ${(props) => {
+    if (props.$percent >= 90) return "#00C851";
+    if (props.$percent >= 70) return "#FFD700";
+    if (props.$percent >= 40) return "#FF8C00";
+    return "#FF4444";
   }};
+  color: ${(props) => {
+    if (props.$percent >= 90) return "#00C851";
+    if (props.$percent >= 70) return "#FFD700";
+    if (props.$percent >= 40) return "#FF8C00";
+    return "#FF4444";
+  }};
+  box-shadow: 0 0 20px
+    ${(props) => {
+      if (props.$percent >= 90) return "rgba(0, 200, 81, 0.4)";
+      if (props.$percent >= 70) return "rgba(255, 215, 0, 0.4)";
+      if (props.$percent >= 40) return "rgba(255, 140, 0, 0.4)";
+      return "rgba(255, 68, 68, 0.4)";
+    }};
+  text-shadow: 0 0 15px currentColor;
 `;
 
 const Description = styled.div`
-  margin: 5px 0;
-  font-size: 18px;
+  margin: 15px 0;
+  font-size: 20px;
+  font-family: var(--exo-font);
+  font-weight: 400;
   max-width: 550px;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 `;
 
 const ResultImage = styled.img`
   max-width: 90%;
-  max-height: 180px;
-  border-radius: 10px;
-  margin: 8px 0;
+  max-height: 200px;
+  border-radius: 15px;
+  margin: 15px 0;
   object-fit: contain;
+  border: 2px solid rgba(120, 119, 198, 0.4);
+  box-shadow: var(--shadow-glow), 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 30px rgba(120, 119, 198, 0.6),
+      0 12px 40px rgba(0, 0, 0, 0.4);
+  }
 `;
 
 // Animation for the uncanny effect
@@ -291,14 +353,77 @@ const ErrorButton = styled.button`
 `;
 
 const CategoryTag = styled.div`
-  background-color: ${(props) =>
-    props.$category === "aboutYou" ? "#3498db" : "#e74c3c"};
+  background: ${(props) =>
+    props.$category === "aboutYou"
+      ? "var(--gradient-secondary)"
+      : "var(--gradient-primary)"};
   color: white;
-  font-size: 16px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  margin-bottom: 15px;
+  font-size: 18px;
+  font-family: var(--exo-font);
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 25px;
+  margin-bottom: 20px;
   display: inline-block;
+  box-shadow: 0 0 15px rgba(120, 119, 198, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+`;
+
+const StyledButton = styled(Button)`
+  padding: 15px 35px;
+  font-size: 20px;
+  font-family: var(--exo-font);
+  font-weight: 600;
+  background: ${(props) =>
+    props.$variant === "danger"
+      ? "linear-gradient(135deg, #FF4444 0%, #CC0000 100%)"
+      : "var(--gradient-primary)"};
+  border: none;
+  border-radius: 25px;
+  color: white;
+  box-shadow: ${(props) =>
+    props.$variant === "danger"
+      ? "0 0 20px rgba(255, 68, 68, 0.4)"
+      : "var(--shadow-glow)"};
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin: 15px 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: ${(props) =>
+      props.$variant === "danger"
+        ? "0 0 30px rgba(255, 68, 68, 0.8), 0 10px 20px rgba(0, 0, 0, 0.3)"
+        : "0 0 30px rgba(120, 119, 198, 0.8), 0 10px 20px rgba(0, 0, 0, 0.3)"};
+
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
 `;
 
 // 새로운 팝업을 위한 스타일
@@ -864,7 +989,7 @@ const Result = () => {
           style={{}}
         >
           <CategoryTag $category={category}>
-            {category === "aboutYou" ? "나에 대해서" : "게임에 대해서"}
+            {category === "aboutYou" ? "🚀 개척자 테스트" : "🎮 은하 게임"}
           </CategoryTag>
 
           <Title $color={crazyEffectTriggered ? "#ff0" : "#fff"}>
@@ -882,14 +1007,13 @@ const Result = () => {
 
           <Description>{resultData.description}</Description>
 
-          <Button
-            variant={resultData.effect === "uncanny" ? "danger" : "primary"}
+          <StyledButton
+            $variant={resultData.effect === "uncanny" ? "danger" : "primary"}
             onClick={handlePlayAgain}
-            size="lg"
             disabled={buttonsDisabled}
           >
-            다시 도전하기
-          </Button>
+            🚀 다시 도전하기
+          </StyledButton>
 
           <ShareButtons
             resultName={resultData.title}

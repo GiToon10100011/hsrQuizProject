@@ -11,14 +11,28 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100vh;
-  color: #fff;
+  min-height: 100vh;
+  color: var(--text-primary);
+  position: relative;
+  padding: 20px;
 `;
 
 const Header = styled.div`
-  font-size: 40px;
-  font-weight: 600;
+  font-family: var(--orbitron-font);
+  font-size: 48px;
+  font-weight: 700;
   margin-bottom: 30px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+  text-shadow: 0 0 30px rgba(120, 119, 198, 0.5);
+  letter-spacing: 2px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 36px;
+  }
 `;
 
 const Contents = styled.div`
@@ -26,32 +40,73 @@ const Contents = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
+  max-width: 600px;
+  width: 100%;
+
   button {
     align-self: stretch;
     font-size: 18px;
-    padding: 12px 24px;
+    padding: 15px 30px;
+    font-family: var(--exo-font);
+    font-weight: 500;
   }
 `;
 
 const Title = styled.div`
-  font-size: 28px;
+  font-family: var(--exo-font);
+  font-size: 32px;
+  font-weight: 600;
   margin: 20px 0 10px;
   text-align: center;
+  color: var(--text-primary);
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+
+  @media screen and (max-width: 768px) {
+    font-size: 26px;
+  }
 `;
 
 const LogoImg = styled.div`
+  position: relative;
+
   & > img {
     width: 350px;
     height: 350px;
     object-fit: cover;
-    border-radius: 15px;
+    border-radius: 20px;
     margin-bottom: 20px;
+    border: 3px solid transparent;
+    background: var(--gradient-primary);
+    background-clip: padding-box;
+    box-shadow: var(--shadow-glow), inset 0 0 20px rgba(120, 119, 198, 0.2);
+    transition: all 0.3s ease;
   }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: 17px;
+    background: var(--gradient-primary);
+    border-radius: 23px;
+    z-index: -1;
+    opacity: 0.7;
+    filter: blur(8px);
+  }
+
+  &:hover > img {
+    transform: scale(1.02);
+    box-shadow: 0 0 40px rgba(120, 119, 198, 0.6),
+      inset 0 0 30px rgba(120, 119, 198, 0.3);
+  }
+
   @media screen and (max-width: 768px) {
     & > img {
       width: 300px;
-      object-fit: cover;
+      height: 300px;
     }
   }
 `;
@@ -65,42 +120,84 @@ const VolumeMessage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.9);
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 15, 35, 0.95) 0%,
+    rgba(0, 0, 0, 0.98) 100%
+  );
+  backdrop-filter: blur(10px);
   z-index: 1000;
   flex-direction: column;
   gap: 30px;
 
   h2 {
-    font-size: 40px;
-    color: white;
+    font-family: var(--orbitron-font);
+    font-size: 42px;
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     text-align: center;
+    text-shadow: 0 0 20px rgba(120, 119, 198, 0.5);
   }
 
   p {
+    font-family: var(--exo-font);
     font-size: 22px;
-    color: white;
+    color: var(--text-secondary);
     text-align: center;
     max-width: 80%;
-    line-height: 1.6;
+    line-height: 1.8;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
   }
 
   button {
     padding: 15px 30px;
     font-size: 22px;
-    background-color: #e74c3c;
+    font-family: var(--exo-font);
+    font-weight: 600;
+    background: var(--gradient-primary);
     border: none;
+    border-radius: 25px;
     margin-top: 20px;
     transition: all 0.3s ease;
+    box-shadow: var(--shadow-glow);
+    color: white;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      transition: left 0.5s;
+    }
 
     &:hover {
-      background-color: #c0392b;
-      transform: scale(1.05);
+      transform: scale(1.05) translateY(-2px);
+      box-shadow: 0 0 30px rgba(120, 119, 198, 0.6),
+        0 10px 20px rgba(0, 0, 0, 0.3);
+
+      &::before {
+        left: 100%;
+      }
     }
   }
 
   .volume-icon {
     font-size: 80px;
-    animation: pulse 2s infinite;
+    animation: pulse 2s infinite, float 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(120, 119, 198, 0.7));
   }
 
   @keyframes pulse {
@@ -114,44 +211,140 @@ const VolumeMessage = styled.div`
       transform: scale(1);
     }
   }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 `;
 
 const CategoryCard = styled(Button)`
   width: 100%;
   padding: 30px !important;
-  margin: 10px 0;
+  margin: 15px 0;
   text-align: center;
-  font-size: 22px !important;
-  background-color: ${(props) => props.$bgColor || "#007bff"};
-  border: none;
-  transition: transform 0.3s ease;
+  font-size: 24px !important;
+  font-family: var(--exo-font) !important;
+  font-weight: 600 !important;
+  background: ${(props) =>
+    props.$bgColor === "#3498db"
+      ? "var(--gradient-secondary)"
+      : "var(--gradient-primary)"};
+  border: 2px solid transparent;
+  border-radius: 15px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-glow);
+  color: white !important;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.6s;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 70%
+    );
+    transition: all 0.6s;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+  }
 
   &:hover {
-    transform: scale(1.05);
-    background-color: ${(props) => props.$hoverColor || "#0069d9"};
+    transform: scale(1.05) translateY(-5px);
+    box-shadow: 0 0 40px rgba(120, 119, 198, 0.8),
+      0 15px 30px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+
+    &::before {
+      left: 100%;
+    }
+
+    &::after {
+      width: 300px;
+      height: 300px;
+    }
+  }
+
+  &:active {
+    transform: scale(0.98) translateY(-2px);
   }
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 20px;
+  margin-top: 25px;
 
   @media (max-width: 768px) {
     flex-direction: column;
+    gap: 15px;
   }
 `;
 
 const TestSoundButton = styled(Button)`
   padding: 15px 30px;
   font-size: 22px;
-  background-color: #3498db;
+  font-family: var(--exo-font);
+  font-weight: 600;
+  background: var(--gradient-secondary);
   border: none;
+  border-radius: 25px;
   transition: all 0.3s ease;
+  box-shadow: 0 0 15px rgba(79, 195, 247, 0.4);
+  color: white;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.5s;
+  }
 
   &:hover {
-    background-color: #2980b9;
-    transform: scale(1.05);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 0 25px rgba(79, 195, 247, 0.6), 0 8px 16px rgba(0, 0, 0, 0.3);
+
+    &::before {
+      left: 100%;
+    }
   }
 `;
 
@@ -185,21 +378,21 @@ const Home = () => {
     <Wrapper>
       {showVolumeMessage && (
         <VolumeMessage>
-          <div className="volume-icon">🔊</div>
-          <h2>음량을 켜주세요!</h2>
+          <div className="volume-icon">🎵</div>
+          <h2>은하철도 탑승 준비!</h2>
           <p>
-            퀴즈에 오디오 효과가 포함되어 있습니다.
+            스타레일 퀴즈에는 특별한 사운드 효과가 포함되어 있습니다.
             <br />
-            최상의 경험을 위해 음량을 켜주세요.
+            최고의 우주 여행을 위해 음량을 켜주세요! ⭐
             <br />
             (음량은 50%로 설정되어 있습니다)
           </p>
           <ButtonGroup>
             <TestSoundButton onClick={handleTestSound}>
-              소리 테스트
+              🎧 사운드 테스트
             </TestSoundButton>
             <Button variant="danger" onClick={handleVolumeMessageClose}>
-              알겠습니다!
+              🚀 여행 시작!
             </Button>
           </ButtonGroup>
         </VolumeMessage>
@@ -207,13 +400,30 @@ const Home = () => {
 
       {showCategories && (
         <>
-          <Header>상식 퀴즈</Header>
-          <p style={{ fontSize: "20px", color: "gray", marginBottom: "-20px" }}>
+          <Header>스타레일 퀴즈</Header>
+          <p
+            style={{
+              fontSize: "18px",
+              color: "var(--text-secondary)",
+              marginBottom: "-15px",
+              fontFamily: "var(--exo-font)",
+              textShadow: "0 0 8px rgba(255, 255, 255, 0.2)",
+            }}
+          >
             (외부 브라우저로 플레이 권장)
           </p>
           <Contents>
-            <Title>카테고리를 선택해주세요!</Title>
-            <p>만점을 받으면 선물이 있다는데..?(PC 환경 권장)</p>
+            <Title>은하철도의 여정을 시작하세요!</Title>
+            <p
+              style={{
+                fontSize: "18px",
+                color: "var(--text-secondary)",
+                fontFamily: "var(--exo-font)",
+                textShadow: "0 0 8px rgba(255, 255, 255, 0.1)",
+              }}
+            >
+              만점을 받으면 특별한 보상이..? ⭐ (PC 환경 권장)
+            </p>
             <LogoImg>
               <img src="/myImages/favicon.jpg" alt="quiz logo" />
             </LogoImg>
@@ -223,7 +433,7 @@ const Home = () => {
               $hoverColor="#2980b9"
               onClick={() => handleCategorySelect("aboutYou")}
             >
-              나에 대한 상식 퀴즈
+              🚀 에이언즈 지식 테스트
             </CategoryCard>
 
             <CategoryCard
@@ -231,7 +441,7 @@ const Home = () => {
               $hoverColor="#c0392b"
               onClick={() => handleCategorySelect("aboutGames")}
             >
-              게임 상식 퀴즈
+              🎮 지니어스 클럽 상식퀴즈
             </CategoryCard>
           </Contents>
         </>
