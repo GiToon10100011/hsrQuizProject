@@ -18,7 +18,6 @@ const Wrapper = styled.div`
 `;
 
 const Header = styled.div`
-  font-family: var(--orbitron-font);
   font-size: 48px;
   font-weight: 700;
   margin-bottom: 30px;
@@ -28,7 +27,6 @@ const Header = styled.div`
   background-clip: text;
   text-align: center;
   text-shadow: 0 0 30px rgba(120, 119, 198, 0.5);
-  letter-spacing: 2px;
 
   @media screen and (max-width: 768px) {
     font-size: 36px;
@@ -71,8 +69,7 @@ const LogoImg = styled.div`
   position: relative;
 
   & > img {
-    width: 350px;
-    height: 350px;
+    padding: 24px;
     object-fit: cover;
     border-radius: 20px;
     margin-bottom: 20px;
@@ -131,7 +128,6 @@ const VolumeMessage = styled.div`
   gap: 30px;
 
   h2 {
-    font-family: var(--orbitron-font);
     font-size: 42px;
     font-weight: 700;
     background: var(--gradient-primary);
@@ -410,7 +406,6 @@ const Home = () => {
               textShadow: "0 0 8px rgba(255, 255, 255, 0.2)",
             }}
           >
-            (외부 브라우저로 플레이 권장)
           </p>
           <Contents>
             <Title>은하철도의 여정을 시작하세요!</Title>
@@ -425,7 +420,7 @@ const Home = () => {
               만점을 받으면 특별한 보상이..? ⭐ (PC 환경 권장)
             </p>
             <LogoImg>
-              <img src="/myImages/favicon.jpg" alt="quiz logo" />
+              <img src="/myImages/favicon.png" alt="quiz logo" />
             </LogoImg>
 
             <CategoryCard

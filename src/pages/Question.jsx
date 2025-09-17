@@ -286,7 +286,6 @@ const NextButton = styled(Button)`
 `;
 
 const ScoreDisplay = styled.div`
-  font-family: var(--orbitron-font);
   font-size: 28px;
   font-weight: 600;
   margin: 20px 0;
@@ -395,7 +394,7 @@ const Question = () => {
         $category={category}
       />
       <CategoryBadge $category={category}>
-        {category === "aboutYou" ? "🚀 개척자 테스트" : "🎮 은하 게임"}
+        {category === "aboutYou" ? "🚀 에이언즈 퀴즈" : "🎮 지니어스 클럽 퀴즈"}
       </CategoryBadge>
       <Wrapper>
         <ScoreDisplay>점수: {score} / 10</ScoreDisplay>
@@ -409,10 +408,7 @@ const Question = () => {
               <img src={currentQuestion.mediaPath} alt="Question" />
             )}
             {currentQuestion.type === "audio" && (
-              <audio controls>
-                <source src={currentQuestion.mediaPath} type="audio/mpeg" />
-                Your browser does not support the audio element.
-              </audio>
+              <img src={currentQuestion.mediaPath} alt="Question" />
             )}
             {currentQuestion.type === "video" && (
               <video controls>

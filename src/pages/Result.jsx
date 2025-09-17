@@ -65,7 +65,6 @@ const ContentContainer = styled.div`
 `;
 
 const Title = styled.div`
-  font-family: var(--orbitron-font);
   font-size: 36px;
   font-weight: 700;
   margin-bottom: 10px;
@@ -85,7 +84,6 @@ const Title = styled.div`
 `;
 
 const ScoreDisplay = styled.div`
-  font-family: var(--orbitron-font);
   font-size: 36px;
   font-weight: 800;
   margin: 10px 0;
